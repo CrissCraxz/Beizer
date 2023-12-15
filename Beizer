@@ -1,0 +1,149 @@
+private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            MouseEventArgs me = (MouseEventArgs)e;
+            Point coordenadas = me.Location;
+
+            using (Graphics g = pictureBox1.CreateGraphics())
+            {
+                g.FillEllipse(Brushes.Red, coordenadas.X - 5, coordenadas.Y - 5, 10, 10);
+            }
+
+            puntos.Add(coordenadas);
+
+        }
+
+
+private void button7_Click(object sender, EventArgs e)
+{
+
+        
+
+        using (Graphics g = Graphics.FromImage(pantalla))
+        {
+            using (Pen pen = new Pen(Color.Blue))
+            {
+                if (puntos.Count == 2)
+                {
+                    g.DrawLines(pen, puntos.ToArray());
+                }
+                else if (puntos.Count == 3)
+                {
+                DibujarCurvaDeCasteljau(g, pen, puntos[0], puntos[1], puntos[2]);
+
+            }
+            else if (puntos.Count == 4)
+                {
+                    g.DrawBeziers(pen, puntos.ToArray());
+                }
+            }
+        }
+
+        pictureBox1.Image = pantalla;
+    
+
+}
+
+
+private void DibujarCurvaDeCasteljau(Graphics g, Pen pen, Point p0, Point p1, Point p2)
+{
+    // Parámetro t que varía entre 0 y 1
+    for (double t = 0; t <= 1; t += 0.01)
+    {
+        // Puntos intermedios utilizando el algoritmo de De Casteljau
+        double x01 = (1 - t) * p0.X + t * p1.X;
+        double y01 = (1 - t) * p0.Y + t * p1.Y;
+
+        double x12 = (1 - t) * p1.X + t * p2.X;
+        double y12 = (1 - t) * p1.Y + t * p2.Y;
+
+        double x = (1 - t) * x01 + t * x12;
+        double y = (1 - t) * y01 + t * y12;
+
+        // Dibujar un pequeño segmento de la curva
+        g.DrawEllipse(pen, (float)x, (float)y, 1, 1);
+    }
+}
+
+// beizer cubica infinita
+
+private List<Point> puntos = new List<Point>();
+
+        private void btnCurvaBezier_Click(object sender, EventArgs e)
+        {
+            
+            if (puntos.Count >= 4)
+            {
+
+                Bitmap pixel = new Bitmap(pbxScreen.Width, pbxScreen.Height);
+
+     
+                using (Graphics g = Graphics.FromImage(pixel))
+                {
+    
+                    using (Pen pen = new Pen(Color.Blue))
+                    {
+
+                        g.DrawBeziers(pen, puntos.ToArray());
+                    }
+                }
+
+                pbxScreen.Image = pixel;
+            }
+            else
+            {
+                MessageBox.Show("Debe seleccionar al menos 4 puntos para dibujar la curva de Bézier.");
+            }
+            /*
+            if (puntos.Count == 3)
+            {
+                Bitmap pixel = new Bitmap(pbxScreen.Width, pbxScreen.Height);
+
+                using (Graphics g = Graphics.FromImage(pixel))
+                {
+                    using (Pen pen = new Pen(Color.Blue))
+                    {
+                        // Dibujar la curva de Bézier cuadrática utilizando el algoritmo de De Casteljau
+                        DibujarCurvaDeCasteljau(g, pen, puntos[0], puntos[1], puntos[2]);
+                    }
+                }
+
+                pbxScreen.Image = pixel;
+            }
+            else
+            {
+                MessageBox.Show("Debe seleccionar exactamente 3 puntos para dibujar la curva de Bézier cuadrática.");
+            }*/
+
+        }
+        private void DibujarCurvaDeCasteljau(Graphics g, Pen pen, Point p0, Point p1, Point p2)
+        {
+            // Parámetro t que varía entre 0 y 1
+            for (double t = 0; t <= 1; t += 0.01)
+            {
+                // Puntos intermedios utilizando el algoritmo de De Casteljau
+                double x01 = (1 - t) * p0.X + t * p1.X;
+                double y01 = (1 - t) * p0.Y + t * p1.Y;
+
+                double x12 = (1 - t) * p1.X + t * p2.X;
+                double y12 = (1 - t) * p1.Y + t * p2.Y;
+
+                double x = (1 - t) * x01 + t * x12;
+                double y = (1 - t) * y01 + t * y12;
+
+                // Dibujar un pequeño segmento de la curva
+                g.DrawEllipse(pen, (float)x, (float)y, 1, 1);
+            }
+        }
+
+        private void pbxScreen_Click(object sender, EventArgs e)
+        {
+            MouseEventArgs me = (MouseEventArgs)e;
+            Point coordenadas = me.Location;
+
+            using (Graphics g = pbxScreen.CreateGraphics())
+            {
+                g.FillEllipse(Brushes.Red, coordenadas.X - 5, coordenadas.Y - 5, 10, 10);
+            }
+
+            puntos.Add(coordenadas);
+        }
